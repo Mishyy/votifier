@@ -21,7 +21,6 @@ import com.vexsoftware.votifier.Votifier;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.spec.RSAKeyGenParameterSpec;
-import java.util.logging.Logger;
 
 /**
  * An RSA key pair generator.

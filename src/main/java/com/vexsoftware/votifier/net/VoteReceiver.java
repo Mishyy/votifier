@@ -112,37 +112,36 @@ public final class VoteReceiver extends Thread {
 					writer.flush();
 				}
 
+				byte[] block = new byte[256];
 				try (final InputStream in = socket.getInputStream()) {
 					// Read the 256 byte block.
-					byte[] block = new byte[256];
 					in.read(block, 0, block.length);
-
-					// Decrypt the block.
-					block = RSA.decrypt(block, plugin.getKeyPair().getPrivate());
-					int position = 0;
-
-					// Perform the opcode check.
-					String opcode = readString(block, position);
-					position += opcode.length();
-					if (!opcode.equals("VOTE")) {
-						// Something went wrong in RSA.
-						throw new IllegalStateException("Unable to decode RSA.");
-					}
-
-					// Create the vote
-					final Vote vote = new Vote();
-					vote.setServiceName(readString(block, position));
-					vote.setUsername(readString(block, position += vote.getServiceName().length()));
-					vote.setAddress(readString(block, position += vote.getUsername().length()));
-					vote.setTimeStamp(readString(block, position + vote.getAddress().length()));
-
-					if (plugin.isDebug()) {
-						plugin.getLogger().info("Received vote record -> " + vote);
-					}
-
-					// Call event in a synchronized fashion to ensure that the custom event runs in the the main server thread, not this one.
-					plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.getServer().getPluginManager().callEvent(new VotifierEvent(vote)));
 				}
+
+				// Decrypt the block.
+				block = RSA.decrypt(block, plugin.getKeyPair().getPrivate());
+				int position = 0;
+
+				// Perform the opcode check.
+				final String opcode = readString(block, position);
+				if (!opcode.equals("VOTE")) {
+					// Something went wrong in RSA.
+					throw new IllegalStateException("Unable to decode RSA.");
+				}
+
+				// Create the vote
+				final Vote vote = new Vote();
+				vote.setServiceName(readString(block, position += opcode.length()));
+				vote.setUsername(readString(block, position += vote.getServiceName().length()));
+				vote.setAddress(readString(block, position += vote.getUsername().length()));
+				vote.setTimeStamp(readString(block, position + vote.getAddress().length()));
+
+				if (plugin.isDebug()) {
+					plugin.getLogger().info("Received vote record -> " + vote);
+				}
+
+				// Call event in a synchronized fashion to ensure that the custom event runs in the the main server thread, not this one.
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> plugin.getServer().getPluginManager().callEvent(new VotifierEvent(vote)));
 			} catch (SocketException e) {
 				plugin.getLogger().warning("Protocol error. Ignoring packet - " + e.getLocalizedMessage());
 			} catch (BadPaddingException e) {

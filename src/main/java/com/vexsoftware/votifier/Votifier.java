@@ -54,18 +54,18 @@ public final class Votifier extends JavaPlugin {
 	private boolean debug;
 
 	@Override
+	public void onLoad() {
+		getConfig().options().copyDefaults(true);
+		saveDefaultConfig();
+	}
+
+	@Override
 	public void onDisable() {
 		// Interrupt the vote receiver.
 		if (voteReceiver != null) {
 			voteReceiver.shutdown();
 		}
 		getLogger().info("Votifier disabled.");
-	}
-
-	@Override
-	public void onLoad() {
-		getConfig().options().copyDefaults(true);
-		saveDefaultConfig();
 	}
 
 	@Override
