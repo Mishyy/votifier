@@ -1,16 +1,18 @@
 package com.vexsoftware.votifier.model;
 
-import org.bukkit.event.*;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * {@code VotifierEvent} is a custom Bukkit event class that is sent
+ * {@link VotifierEvent} is a custom Bukkit event class that is sent
  * synchronously to CraftBukkit's main thread allowing other plugins to listener
  * for votes.
- * 
+ *
  * @author frelling
- * 
  */
-public class VotifierEvent extends Event {
+public final class VotifierEvent extends Event {
+
 	/**
 	 * Event listener handler list.
 	 */
@@ -19,24 +21,23 @@ public class VotifierEvent extends Event {
 	/**
 	 * Encapsulated vote record.
 	 */
-	private Vote vote;
+	private final Vote vote;
 
 	/**
 	 * Constructs a vote event that encapsulated the given vote record.
-	 * 
-	 * @param vote
-	 *            vote record
+	 *
+	 * @param vote vote record
 	 */
-	public VotifierEvent(final Vote vote) {
+	public VotifierEvent(final @NotNull Vote vote) {
 		this.vote = vote;
 	}
 
 	/**
 	 * Return the encapsulated vote record.
-	 * 
+	 *
 	 * @return vote record
 	 */
-	public Vote getVote() {
+	public @NotNull Vote getVote() {
 		return vote;
 	}
 
@@ -45,7 +46,4 @@ public class VotifierEvent extends Event {
 		return handlers;
 	}
 
-	public static HandlerList getHandlerList() {
-		return handlers;
-	}
 }
